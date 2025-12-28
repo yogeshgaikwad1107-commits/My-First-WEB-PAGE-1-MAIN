@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Letter</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Pacifico&family=Lobster&family=Montserrat:wght@400;700&family=Roboto+Slab:wght@400;700&family=Playfair+Display:wght@400;700&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:linear-gradient(135deg,#0b0f1a,#2b1b1d);--accent:#ffd54d}
+    body{margin:0;font-family:'Poppins', Arial, sans-serif;background:var(--bg);color:#fff;}
+    .container{max-width:960px;margin:40px auto;padding:20px;text-align:center}
+    .back{display:inline-block;margin-bottom:18px;background:rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;color:#fff;text-decoration:none}
+    .letter-big{font-size:120px;font-weight:900;line-height:1;margin:10px 0;font-family:'Poppins', Arial, sans-serif;letter-spacing:4px}
+    .sub{opacity:0.9;margin-bottom:20px;font-weight:600}
+
+    .names-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:20px}
+
+    /* female / male sections */
+    .female-section h4, .male-section h4 {margin:10px 0 6px 0;font-size:14px;color:rgba(255,255,255,0.95);text-transform:uppercase;letter-spacing:1px}
+    .female-grid .name-card {background:linear-gradient(135deg, rgba(255,192,203,0.06), rgba(255,120,170,0.08));border:1px solid rgba(255,120,170,0.09)}
+    .male-grid .name-card {background:linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,235,59,0.03));border:1px solid rgba(255,235,59,0.06)}
+
+    .name-card{padding:18px;border-radius:12px;cursor:pointer;transition:transform .18s,box-shadow .18s}
+    .name-card:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 14px 36px rgba(0,0,0,0.45)}
+    .name-card h3{margin:0 0 6px 0;font-size:20px;background:linear-gradient(90deg,#ffffff,#ffd54d);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+    .font-0 h3{font-family:'Pacifico', cursive}
+    .font-1 h3{font-family:'Lobster', cursive}
+    .font-2 h3{font-family:'Playfair Display', serif;font-weight:700}
+    .font-3 h3{font-family:'Roboto Slab', serif}
+    .font-4 h3{font-family:'Montserrat', sans-serif;font-weight:700;letter-spacing:0.5px}
+    .font-5 h3{font-family:'Oswald', sans-serif;font-weight:700;letter-spacing:1px}
+    .note{opacity:0.85;font-size:13px;margin-top:12px;color:rgba(255,255,255,0.9)}
+    .source small{display:block;margin-top:14px;opacity:0.9;font-size:13px}
+    .empty{opacity:0.9;margin-top:20px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="index.html">← Back</a>
+
+    <div id="content">
+      <div id="letter" class="letter-big">A</div>
+      <div id="phonetic" class="sub"></div>
+      <div id="names" class="names-grid"></div>
+      <div class="empty" id="emptyMsg" style="display:none">No names found for this letter.</div>
+      <div class="source" id="source"><small></small></div>
+    </div>
+  </div>
+
+  <script src="letter.js"></script>
+</body>
+</html>
