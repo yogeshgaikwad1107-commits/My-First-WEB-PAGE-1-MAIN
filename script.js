@@ -196,13 +196,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateVideoState();
 
-  // Remove explore button functionality
+  // Explore button functionality - opens search bar in new tab
   const exploreBtn = document.getElementById('exploreBtn');
   if (exploreBtn) {
     exploreBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      document.getElementById('search-section').scrollIntoView({ behavior: 'smooth' });
-      searchInput.focus();
+      window.open(window.location.href + '#search-section', '_blank');
     });
   }
 });
