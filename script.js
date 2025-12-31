@@ -1,143 +1,149 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const exploreBtn = document.getElementById('exploreBtn');
-  const container = document.getElementById('alphabet-container');
-  const section = document.getElementById('alphabet-section');
-  const modeIndianBtn = document.getElementById('mode-indian');
-  const modePhoneticBtn = document.getElementById('mode-phonetic');
-  const sourceEl = document.getElementById('name-source');
+  const searchInput = document.getElementById('searchInput');
+  const container = document.getElementById('font-styles-container');
+  const noResultsMsg = document.getElementById('no-results-msg');
 
-  let alphabetsData = null;
-  let lastLoadedFrom = null; // 'server' or 'fallback'
-  let mode = 'indian'; // default mode as you requested
+  // Array of font styles with emojis and CSS properties
+  const fontStyles = [
+    { name: '🎨 Bold Italic', css: 'font-weight: 900; font-style: italic; font-size: 28px;' },
+    { name: '✨ Cursive', css: 'font-family: cursive; font-size: 28px; font-style: italic;' },
+    { name: '🌟 Monospace', css: 'font-family: monospace; font-size: 26px; font-weight: bold; letter-spacing: 2px;' },
+    { name: '💎 Shadow', css: 'font-weight: 700; font-size: 28px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);' },
+    { name: '🔥 Small Caps', css: 'font-variant: small-caps; font-weight: bold; font-size: 28px;' },
+    { name: '🎭 Comic Sans', css: 'font-family: "Comic Sans MS", cursive; font-size: 26px; font-weight: bold;' },
+    { name: '🌈 Rainbow Color', css: 'background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: bold; font-size: 28px;' },
+    { name: '🎪 Outlined', css: 'font-weight: bold; font-size: 28px; -webkit-text-stroke: 2px var(--accent); color: transparent;' },
+    { name: '⭐ Uppercase Heavy', css: 'text-transform: uppercase; font-weight: 900; letter-spacing: 3px; font-size: 26px;' },
+    { name: '💫 Underline Double', css: 'text-decoration: underline double; text-decoration-color: var(--accent); font-weight: bold; font-size: 28px;' },
+    { name: '🌊 Wave', css: 'font-style: italic; font-weight: 700; font-size: 28px; letter-spacing: 2px;' },
+    { name: '🎯 Serif Fancy', css: 'font-family: Georgia, serif; font-size: 28px; font-weight: bold; letter-spacing: 1px;' },
+    { name: '🚀 Futuristic', css: 'font-family: "Arial Black", sans-serif; font-size: 24px; font-weight: 900; letter-spacing: 4px; text-transform: uppercase;' },
+    { name: '💖 Pink Glow', css: 'color: #ff69b4; text-shadow: 0 0 10px #ff69b4, 0 0 20px #ff1493; font-weight: bold; font-size: 28px;' },
+    { name: '🌙 Blue Glow', css: 'color: #00d4ff; text-shadow: 0 0 10px #00d4ff, 0 0 20px #0099ff; font-weight: bold; font-size: 28px;' },
+    { name: '🔮 Mystical', css: 'font-family: Georgia, serif; font-style: italic; font-weight: 700; font-size: 28px; letter-spacing: 3px;' },
+    { name: '⚡ Electric', css: 'background: linear-gradient(90deg, #ffff00, #ff8800); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 900; font-size: 28px;' },
+    { name: '🎨 Graffiti', css: 'font-family: "Impact", sans-serif; font-size: 26px; font-weight: 900; letter-spacing: 2px; transform: skew(-10deg);' },
+    { name: '🌸 Elegant', css: 'font-family: "Trebuchet MS", sans-serif; font-size: 28px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;' },
+    { name: '🎪 Strikethrough', css: 'text-decoration: line-through; font-weight: bold; font-size: 28px; letter-spacing: 2px;' }
+  ];
 
-  function render(data) {
-    if (!data) return;
-    const html = data.map(a => {
-      const displayName = mode === 'indian' ? (a.indian || a.name || a.phonetic) : (a.phonetic || a.name || a.indian);
-      const originLabel = mode === 'indian' ? 'Indian' : 'Phonetic';
-      return `
-      <div class="alphabet-card" role="article" aria-label="${a.letter} - ${displayName}" data-letter="${a.letter}">
-        <div class="alphabet-letter">${a.letter}</div>
-        <div class="alphabet-name">${displayName}</div>
-        <div style="opacity:0.7; font-size:12px; margin-top:8px;">${originLabel}</div>
-      </div>
-    `;
-    }).join('');
+  function generateFontStyles(text) {
+    container.innerHTML = '';
+    noResultsMsg.textContent = '';
 
-    container.innerHTML = html;
+    if (!text.trim()) {
+      noResultsMsg.textContent = 'Start typing to see your word in 20 stylish fonts!';
+      return;
+    }
 
-    // make cards navigate to per-letter page
-    container.querySelectorAll('.alphabet-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const L = card.dataset.letter;
-        const url = `letter.html?letter=${encodeURIComponent(L)}&mode=${encodeURIComponent(mode)}`;
-        window.location.href = url;
+    const fragment = document.createDocumentFragment();
+
+    fontStyles.forEach((style, index) => {
+      const item = document.createElement('div');
+      item.className = 'font-style-item';
+
+      const preview = document.createElement('div');
+      preview.className = 'preview';
+      preview.innerHTML = `<span style="${style.css}">${text}</span>`;
+
+      const styleName = document.createElement('div');
+      styleName.className = 'style-name';
+      styleName.textContent = style.name;
+
+      item.appendChild(preview);
+      item.appendChild(styleName);
+
+      // Click to open in new tab
+      item.addEventListener('click', () => {
+        openInNewTab(text, style.css, style.name);
       });
+
+      fragment.appendChild(item);
     });
 
-    updateSourceIndicator();
+    container.appendChild(fragment);
   }
 
-  function updateSourceIndicator() {
-    if (!lastLoadedFrom) return;
-    sourceEl.querySelector('small').textContent = `Data source: ${lastLoadedFrom === 'server' ? 'server' : 'local fallback'}`;
+  function openInNewTab(text, css, styleName) {
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${text} - ${styleName}</title>
+        <style>
+          body {
+            margin: 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #0b0f1a, #2b1b1d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Poppins', Arial, sans-serif;
+          }
+          .container {
+            text-align: center;
+          }
+          .text-display {
+            ${css}
+            color: #ffd54d;
+            margin: 20px 0;
+            word-break: break-word;
+          }
+          .style-info {
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 30px;
+            font-size: 16px;
+          }
+          .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 10px 20px;
+            background: #ffd54d;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: 0.3s;
+          }
+          .back-btn:hover {
+            background: white;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1 style="color: #ffd54d; margin-bottom: 30px;">${styleName}</h1>
+          <div class="text-display">${text}</div>
+          <div class="style-info">
+            <p>Style: <strong>${styleName}</strong></p>
+            <p>Go back and try other styles!</p>
+          </div>
+          <button class="back-btn" onclick="window.history.back()">← Go Back</button>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const newTab = window.open('', '_blank');
+    newTab.document.write(htmlContent);
+    newTab.document.close();
   }
 
-  function setMode(newMode) {
-    mode = newMode;
-    modeIndianBtn.classList.toggle('active', mode === 'indian');
-    modePhoneticBtn.classList.toggle('active', mode === 'phonetic');
-    modeIndianBtn.setAttribute('aria-selected', mode === 'indian');
-    modePhoneticBtn.setAttribute('aria-selected', mode === 'phonetic');
-    if (alphabetsData) render(alphabetsData);
-  }
-
-  modeIndianBtn.addEventListener('click', () => setMode('indian'));
-  modePhoneticBtn.addEventListener('click', () => setMode('phonetic'));
-
-  async function loadAlphabets() {
-    exploreBtn.disabled = true;
-    exploreBtn.textContent = 'Loading...';
-
-    // Try backend first, then fall back to local JSON
-    const sources = ['/api/alphabets', 'alphabets.json'];
-
-    for (const src of sources) {
-      try {
-        const resp = await fetch(src);
-        if (!resp.ok) throw new Error(`Fetch ${src} failed: ${resp.status}`);
-        const data = await resp.json();
-        alphabetsData = data;
-        lastLoadedFrom = src === '/api/alphabets' ? 'server' : 'fallback';
-        render(alphabetsData);
-        exploreBtn.textContent = 'Explore More';
-        exploreBtn.disabled = false;
-        section.scrollIntoView({ behavior: 'smooth' });
-        console.info(`Loaded alphabets from ${src}`);
-        return;
-      } catch (err) {
-        console.warn(`Could not load from ${src}:`, err.message || err);
-        // try next source
-      }
-    }
-
-    // As a last resort, use an embedded built-in dataset so the page works even when opened via file://
-    const embedded = [
-      { letter: 'A', phonetic: 'Alpha', indian: 'Aarav', female: ['Aanya','Aisha','Ananya','Anika','Aarohi','Anushka','Avni','Amaya','Asha','Anvi'], names: ['Aarav','Arjun','Aditya','Aman','Akash','Amit','Aniket','Anirudh','Ansh','Ayaan','Avinash','Arnav'] },
-      { letter: 'B', phonetic: 'Bravo', indian: 'Bharat', female: ['Bela','Bhavya','Bina','Bindiya','Barkha','Bani','Bhumika','Baani','Bela','Bidisha'], names: ['Bharat','Bhavesh','Bikram','Bilal','Brijesh','Bineet','Bhupen','Brij','Bharatendu','Bhuvan','Bharani','Balen'] },
-      { letter: 'C', phonetic: 'Charlie', indian: 'Chirag', female: ['Chandni','Charvi','Chhaya','Chitra','Chandrika','Chetna','Chahak','Chandana','Charita','Charmi'], names: ['Chirag','Charan','Chetan','Chandan','Chinmay','Chaitanya','Chirantan','Chandran','Chinmoy','Chitra','Chetas','Chinmayak'] },
-      { letter: 'D', phonetic: 'Delta', indian: 'Dhruv', names: ['Dhruv','Deepak','Darshan','Danish','Dinesh','Dev','Dilip','Divyesh','Devansh','Darsh','Dwij','Debashish'] },
-      { letter: 'E', phonetic: 'Echo', indian: 'Eshan', names: ['Eshan','Eshwar','Ekagra','Emran','Ejaz','Eklavya','Ehsaan','Ebrahim','Ehtesham','Ebad','Eazaan','Eshaan'] },
-      { letter: 'F', phonetic: 'Foxtrot', indian: 'Farhan', names: ['Farhan','Faisal','Feroz','Farooq','Fazal','Fardeen','Fahad','Firoz','Faiyaz','Faiz','Farid','Farrukh'] },
-      { letter: 'G', phonetic: 'Golf', indian: 'Gaurav', names: ['Gaurav','Ganesh','Girish','Gautam','Gokul','Gulshan','Gautamraj','Govind','Girishan','Gagan','Gopal','Gurmeet'] },
-      { letter: 'H', phonetic: 'Hotel', indian: 'Harsh', names: ['Harsh','Hritik','Himanshu','Harish','Harinder','Himadri','Haresh','Hemant','Harpreet','Harit','Hiralal','Hameed'] },
-      { letter: 'I', phonetic: 'India', indian: 'Ishan', names: ['Ishan','Irfan','Ishaan','Imran','Inder','Ilyas','Ishwar','Ishfaq','Ishmael','Ishaanvi','Ishith','Irav'] },
-      { letter: 'J', phonetic: 'Juliett', indian: 'Jai', names: ['Jai','Jatin','Javed','Jaspal','Jayesh','Jugal','Jaiwant','Javedan','Jagadish','Jehangir','Jayant','Jashan'] },
-      { letter: 'K', phonetic: 'Kilo', indian: 'Karan', names: ['Karan','Kunal','Krishna','Kartik','Kishore','Kumar','Keshav','Karanveer','Kailash','Kavish','Kirtan','Kishan'] },
-      { letter: 'L', phonetic: 'Lima', indian: 'Laksh', names: ['Laksh','Lokesh','Lalit','Laxman','Lokanath','Lalitendu','Lohit','Luv','Lahiri','Lohitashwa','Lekhan','Lalitkumar'] },
-      { letter: 'M', phonetic: 'Mike', indian: 'Manav', names: ['Manav','Mohan','Manish','Mihir','Murtaza','Mayank','Munish','Mukul','Manohar','Mahesh','Mehul','Milind'] },
-      { letter: 'N', phonetic: 'November', indian: 'Nikhil', names: ['Nikhil','Naveen','Nitin','Naman','Naseem','Nikhilesh','Niranjan','Neil','Nadeem','Navdeep','Nayan','Nilesh'] },
-      { letter: 'O', phonetic: 'Oscar', indian: 'Om', names: ['Om','Ojas','Omesh','Onkar','Owais','Omar','Omkarnath','Oorjit','Ojaswin','Omprakash','Omkar','Ojasvi'] },
-      { letter: 'P', phonetic: 'Papa', indian: 'Pranav', names: ['Pranav','Pankaj','Parth','Piyush','Pradeep','Prakash','Pavan','Parveen','Prem','Prithvi','Pranay','Pushkar'] },
-      { letter: 'Q', phonetic: 'Quebec', indian: 'Qasim', names: ['Qasim','Qadir','Qamar','Qaush','Qais','Quamar','Qutub','Qudrat','Qamaruddin','Qudsi','Qamarvash','Qazi'] },
-      { letter: 'R', phonetic: 'Romeo', indian: 'Rohan', names: ['Rohan','Rajat','Rakesh','Rishi','Rizwan','Rahul','Raghav','Rupesh','Roshan','Ritik','Ravindra','Rohit'] },
-      { letter: 'S', phonetic: 'Sierra', indian: 'Sameer', names: ['Sameer','Sachin','Siddharth','Sahil','Sarvesh','Suresh','Siddhant','Sanjay','Sunil','Sumeet','Shivam','Suraj'] },
-      { letter: 'T', phonetic: 'Tango', indian: 'Tanmay', names: ['Tanmay','Tarun','Tushar','Tariq','Tejas','Tapan','Trivikram','Tanuj','Tara','Tushit','Tarak','Tavr'] },
-      { letter: 'U', phonetic: 'Uniform', indian: 'Uday', names: ['Uday','Utkarsh','Umesh','Umang','Ujjwal','Utsav','Udayan','Udayveer','Udvik','Udit','Udayprakash','Ujwal'] },
-      { letter: 'V', phonetic: 'Victor', indian: 'Varun', names: ['Varun','Vikas','Vivek','Vikram','Vaibhav','Vivekanand','Vijay','Vimal','Vedant','Vasant','Vihan','Vraj'] },
-      { letter: 'W', phonetic: 'Whiskey', indian: 'Waseem', names: ['Waseem','Wajid','Wasim','Wahid','Warun','Wasef','Wali','Waseemuddin','Wajahat','Waseemul','Waris','Waseeq'] },
-      { letter: 'X', phonetic: 'X-ray', indian: 'Xavier', names: ['Xavier','Xerxes','Xavian','Xander','Xylon','Xavianth','Xayden','Xenon','Xavion','Xio','Xadrian','Xylen'] },
-      { letter: 'Y', phonetic: 'Yankee', indian: 'Yash', names: ['Yash','Yogesh','Yasir','Yuvraj','Yogendra','Yuvin','Yuvan','Yunus','Yasiraj','Yatin','Yogendra','Yogit'] },
-      { letter: 'Z', phonetic: 'Zulu', indian: 'Zain', names: ['Zain','Zeeshan','Zakir','Zubair','Zaheer','Zubairak','Zafar','Zayd','Zaeem','Zamin','Zayan','Zulfiqar'] }
-    ];
-
-    alphabetsData = embedded;
-    lastLoadedFrom = 'embedded';
-    render(alphabetsData);
-    exploreBtn.textContent = 'Explore More';
-    exploreBtn.disabled = false;
-    section.scrollIntoView({ behavior: 'smooth' });
-    console.info('Loaded embedded alphabets (no network)');
-  }
-
-  exploreBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (container.children.length > 0) {
-      section.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      loadAlphabets();
-    }
+  // Listen for input
+  searchInput.addEventListener('input', (e) => {
+    generateFontStyles(e.target.value);
   });
 
-  // Initialize default mode
-  setMode(mode);
-
-  // Video toggle: enable/disable (remove/recreate) background video (persisted in localStorage)
+  // Video toggle functionality
   const videoToggle = document.getElementById('videoToggle');
   const heroEl = document.querySelector('.hero');
 
   function createBgVideo() {
-    // do nothing if already present
     if (!heroEl) return null;
     let v = document.getElementById('bgVideo');
     if (v) return v;
@@ -188,6 +194,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // run once
   updateVideoState();
+
+  // Remove explore button functionality
+  const exploreBtn = document.getElementById('exploreBtn');
+  if (exploreBtn) {
+    exploreBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('search-section').scrollIntoView({ behavior: 'smooth' });
+      searchInput.focus();
+    });
+  }
 });

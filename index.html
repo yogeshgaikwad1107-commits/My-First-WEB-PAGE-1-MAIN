@@ -206,6 +206,96 @@
             opacity: 0.85;
             font-size: 13px;
         }
+
+        /* Search bar styles */
+        .search-container {
+            padding: 40px 20px;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-container h2 {
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .search-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 14px 18px;
+            font-size: 16px;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.08);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+
+        .search-input:focus {
+            outline: none;
+            background: rgba(255,255,255,0.12);
+            box-shadow: 0 0 15px rgba(255,213,77,0.5);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Font styles grid */
+        .font-styles-grid {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            margin-top: 30px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .font-style-item {
+            background: rgba(255,255,255,0.08);
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+            backdrop-filter: blur(4px);
+            border: 2px solid transparent;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .font-style-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255,213,77,0.15);
+            border-color: var(--accent);
+            box-shadow: 0 10px 25px rgba(255,213,77,0.3);
+        }
+
+        .font-style-item .preview {
+            font-size: 24px;
+            margin-bottom: 8px;
+            word-break: break-all;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .font-style-item .style-name {
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 8px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255,255,255,0.6);
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -235,19 +325,21 @@
             <a href="#" class="btn" id="exploreBtn">Explore More</a>
         </div>
     </div>
-        <div class="ok"></div>
 
-        <!-- Alphabet display -->
-        <section id="alphabet-section" style="padding: 40px 20px; text-align:center;">
-            <h2 style="margin-bottom:12px;">Alphabets</h2>
-
-            <div class="name-toggle" role="tablist" aria-label="Name mode">
-                <button type="button" id="mode-indian" class="mode-btn active" role="tab" aria-selected="true">Indian Names</button>
-                <button type="button" id="mode-phonetic" class="mode-btn" role="tab" aria-selected="false">Phonetic</button>
+        <!-- Search section -->
+        <section id="search-section" style="padding: 40px 20px;">
+            <div class="search-container">
+                <h2>✨ Font Style Generator ✨</h2>
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    class="search-input" 
+                    placeholder="Enter any word to see 20 stylish fonts..."
+                    maxlength="30"
+                >
             </div>
-
-            <div id="alphabet-container" class="alphabet-grid" aria-live="polite"></div>
-            <div class="name-source" id="name-source" aria-hidden="false"><small></small></div>
+            <div id="font-styles-container" class="font-styles-grid"></div>
+            <div id="no-results-msg" class="no-results"></div>
         </section>
 
         <footer>
